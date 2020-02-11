@@ -9,11 +9,15 @@ using namespace std;
 struct node{
     string name; 
     int id;
-    vector<pair<int,double>> next;
-    bool visited = 0;
-    double cost = 0;
+    vector< pair < int , double > > next;
+    bool visited ;
+    double cost;
     double h;
     int parent;
+    node(){
+      cost = 0;
+      visited = 0;
+    }
 };
 bool operator<(struct node a,struct node b){return a.cost>b.cost?true:false;}
 
@@ -71,7 +75,7 @@ void findPathInformed(vector<struct node> *listOfNodes,struct node src,struct no
             return;
         }
 
-        pair<int,int> temp;
+        pair < int , double > temp;
         for (int i=0;i<src.next.size();++i){
             temp = src.next[i];
             if((*listOfNodes)[temp.first].visited==0){
@@ -124,7 +128,7 @@ void findPathUninformed(vector<struct node> *listOfNodes,struct node src,struct 
             return;
         }
 
-        pair<int,int> temp;
+        pair<int,double> temp;
         for (int i=0;i<src.next.size();++i){
             temp = src.next[i];
             if((*listOfNodes)[temp.first].visited==0){
@@ -167,7 +171,7 @@ int main(int argc,char* argv[]){
         // Create the graph
         while (city1.compare("END")!=0 && city2.compare("OF")!=0 &&tempEdge.compare("INPUT")!=0)
         {
-            edgeDistance = stod(tempEdge);
+	    edgeDistance = atof(tempEdge.c_str());
             city1_exists = 0;
             city2_exists = 0;
             for(i=0;i<listOfNodes.size();++i){
@@ -223,7 +227,7 @@ int main(int argc,char* argv[]){
             {
                 for(i=0;i<listOfNodes.size();++i){
                     if(listOfNodes[i].name.compare(city1)==0){
-                        listOfNodes[i].h = stod(h);
+		        listOfNodes[i].h = atof(h.c_str());
                         break;
                     }
                 }
