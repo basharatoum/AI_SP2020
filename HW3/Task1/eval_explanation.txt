@@ -1,0 +1,9 @@
+The evalFunc in the MaxConnect4Game.py file counts the threats and the score difference at the current
+state of the game. The current state will be whatever state the board is in 
+at depth i> depth limit. 
+
+A threat is whenever there is three pieces of the same type and an empty slot in a diagonal, column or row.
+A threat is also something that could happen in the next move. So if there is a three greens at the top and to get
+to the empty spot between them it will take more than one piece, then this is not a threat.
+
+The eval function also takes into consideration the current score the game is in.
