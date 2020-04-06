@@ -7,7 +7,7 @@
 from copy import copy
 import random
 import sys
-
+import math
 
 class maxConnect4Game:
     def __init__(self):
@@ -41,6 +41,11 @@ class maxConnect4Game:
         for row in self.gameBoard:
             self.gameFile.write(''.join(str(col) for col in row) + '\r\n')
         self.gameFile.write('%s\r\n' % str(self.currentTurn))
+    # Output current game status to file
+    def printGameBoardToFileS(self,file):
+        for row in self.gameBoard:
+            file.write(''.join(str(col) for col in row) + '\r\n')
+        file.write('%s\r\n' % str(self.currentTurn))
 
     # Place the current player's piece in the requested column
     def playPiece(self, column):
@@ -61,7 +66,7 @@ class maxConnect4Game:
 
     def MaxFunc(self,depth,Alpha,Beta):
         if self.pieceCount == 42 or depth > self.depthLimit:
-            return self.countScore(),-1
+            return self.evalFunc(),-1
         result = -999999
         rCol =-1
         for i in range(7):
@@ -73,6 +78,7 @@ class maxConnect4Game:
                     rCol = i
                 result = max(result,v)
                 self.removeLastPiece(i)
+
                 if result>=Beta:
                     self.currentTurn = self.Computer
                     return result,rCol
@@ -85,7 +91,7 @@ class maxConnect4Game:
 
     def MinFunc(self,depth,Alpha,Beta):
         if self.pieceCount == 42 or depth > self.depthLimit:
-            return self.countScore(),-1
+            return self.evalFunc(),-1
 
         result = 999999
         rCol =-1
@@ -116,7 +122,58 @@ class maxConnect4Game:
         elif self.currentTurn == 2:
             self.currentTurn = 1
     
+    def evalFunc(self):
+        # look for a possible four in a row add one if it is for the computer and take one if it is for the human
+        self.player1Score = 0;
+        self.player2Score = 0;
+        score = self.countScore()
+        # horizontal threats
+        for r in range(len(self.gameBoard)):
+            for c in range(len(self.gameBoard[0])-3):
+                if self.gameBoard[r][c:c+4].count(1) == 3 and self.gameBoard[r][c:c+4].count(0) ==1 :
+                    tc = self.gameBoard[r][c:c+4].index(0)
+                    if (r+1<len(self.gameBoard) and self.gameBoard[r+1][tc]!=0 )or (r+1==len(self.gameBoard)):
+                        self.player1Score+=1
+                    
+                if self.gameBoard[r][c:c+4].count(2) == 3 and self.gameBoard[r][c:c+4].count(0) ==1 :
+                    tc = self.gameBoard[r][c:c+4].index(0)
+                    if (r+1<len(self.gameBoard) and self.gameBoard[r+1][tc]!=0) or (r+1==len(self.gameBoard)):
+                        self.player2Score+=1
+        # vertical threats
+        for r in range(len(self.gameBoard)-3):
+            for c in range(len(self.gameBoard[0])):
 
+                col = [i[c] for i in self.gameBoard]
+                if col[r:r+4].count(1) ==3 and col[r:r+4].count(0) ==1:
+                    if r-1>=0 and col[r-1]==0:
+                        self.player1Score+=1
+                if col[r:r+4].count(2) ==3 and col[r:r+4].count(0) ==1:
+                    if r-1>=0 and col[r-1]==0:
+                        self.player2Score+=1
+                
+        # diagonal threats
+        for r in range(len(self.gameBoard)-3):
+            for c in range(len(self.gameBoard[0])-3):
+                diag = [self.gameBoard[r+i][c+i] for i in range(4)]
+                
+
+                if diag.count(1) ==3 and diag.count(0) ==1:
+                    tr = diag.index(0) + r
+                    tc = diag.index(0) + c
+                    if (tr+1<len(self.gameBoard) and self.gameBoard[tr+1][tc]!=0) or (tr+1==len(self.gameBoard)):
+                        self.player1Score+=1
+                if diag.count(2) ==3 and diag.count(0) ==1:
+                    tr = diag.index(0) + r
+                    tc = diag.index(0) + c
+                    if (tr+1<len(self.gameBoard) and self.gameBoard[tr+1][tc]!=0) or (tr+1==len(self.gameBoard)):
+                        self.player2Score+=1
+
+        if self.Computer ==1:
+            return score + self.player1Score-self.player2Score
+        else:
+            return score + self.player2Score-self.player1Score
+
+        
 
     # Calculate the number of 4-in-a-row each player has
     def countScore(self):

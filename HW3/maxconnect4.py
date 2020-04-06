@@ -12,7 +12,7 @@ def oneMoveGame(currentGame):
         print 'BOARD FULL\n\nGame Over!\n'
         sys.exit(0)
 
-    currentGame.aiPlay() # Make a move (only random is implemented)
+    currentGame.aiPlay() 
 
     print 'Game state after move:'
     currentGame.printGameBoard()
@@ -30,24 +30,44 @@ def interactiveGame(currentGame):
         if currentGame.Computer == 1:
             print ('Scores:   Computer - %d      Player - %d \n' % (currentGame.player1Score,currentGame.player2Score))
         else:
-            print ('Scores:   Computer - %d      Player - %d \n' % (currentGame.player1Score,currentGame.player2Score))
+            print ('Scores:   Computer - %d      Player - %d \n' % (currentGame.player2Score,currentGame.player1Score))
         print 'BOARD FULL\n\nGame Over!\n'
         sys.exit(0)
     
+    
     if currentGame.currentTurn == currentGame.Computer:
-        currentGame.aiPlay() # Make a move (only random is implemented)
+        currentGame.aiPlay() 
         print 'Game state after move:'
         currentGame.printGameBoard()
-    
+        computerFile = 'computer.txt'
+        try:
+            computerFile = open(computerFile, 'w')
+        except:
+            sys.exit('Error opening output file.')
+        currentGame.printGameBoardToFileS(computerFile)
+
     else:
         playerMove = input ('Player turn, choose a column from 1-7 :  ')
+
+        print len(currentGame.gameBoard[0])
+        if (not(playerMove >=1 and playerMove<=7)):
+            print "Invalid input"
+            interactiveGame(currentGame)
         if currentGame.gameBoard[0][playerMove-1] !=0:
+            print "Invalid input"
             interactiveGame(currentGame)
         else:
             currentGame.playPiece(playerMove-1)
             currentGame.pieceCount +=1
             currentGame.currentTurn = currentGame.currentTurn%2 + 1
             currentGame.printGameBoard()
+            humanFile = 'human.txt'
+            try:
+                humanFile = open(humanFile, 'w')
+            except:
+                sys.exit('Error opening output file.')
+            currentGame.printGameBoardToFileS(humanFile)
+
     interactiveGame(currentGame)
     
 
